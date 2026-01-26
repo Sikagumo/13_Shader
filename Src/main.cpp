@@ -19,12 +19,16 @@ int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 
 	// 初期化
 	Init();
+
 	// 実行
 	Run();
+
 	// 解放
 	Release();
+
 	// ＤＸライブラリの後始末
 	DxLib_End();
+
 	// ソフトの終了
 	return 0;
 }
@@ -47,16 +51,25 @@ void Init(void)
 	// 描画に使用する画像の読み込み
 	texWhite = LoadGraph("Data/White.png");
 
+	// ピクセルシェーダのロード
+	psSimpleColor = LoadPixelShader((PATH_SHADER + "SimpleColor.cso").c_str());
+
+	// ピクセルシェーダのロード
+	psCustomColor = LoadPixelShader((PATH_SHADER + "CustomColor.cso").c_str());
+
+	// ピクセルシェーダ用の定数バッファを作成
+	psCustomColorConstBuf = CreateShaderConstantBuffer(sizeof(float) * 4);
 }
 
 void Release(void)
 {
 
 	// ピクセルシェーダーを解放
-
+	DeleteShader(psSimpleColor);
+	DeleteShader(psCustomColor);
 
 	// ピクセルシェーダー用定数バッファを解放
-
+	DeleteShaderConstantBuffer(psCustomColorConstBuf);
 
 }
 
@@ -99,6 +112,14 @@ void Run(void)
 		// 通常の描画
 		DrawTitle("DrawGraph");
 		DrawGraph(mPosX, mPosY, texDragon, true);
+		mPosX += PLUS_X;
+
+		// 単色の描画
+		DrawSimpleColor();
+		mPosX += PLUS_X;
+
+		// 指定色の描画
+		DrawCustomColor();
 		mPosX += PLUS_X;
 
 		// 裏画面に描画
@@ -213,4 +234,74 @@ void DrawTitle(std::string title)
 void DrawFrame(void)
 {
 	DrawBox(mPosX - 1, mPosY - 1, mPosX + IMG_SIZE_X, mPosY + IMG_SIZE_Y, 0x000000, false);
+}
+
+void DrawSimpleColor(void)
+{
+	DrawTitle("単色");
+
+	// シェーダーの設定
+	SetUsePixelShader(psSimpleColor);
+
+	// ポリゴンの生成
+	MakeSquereVertex();
+
+	// 描画
+	DrawPolygonIndexed2DToShader(
+		mVertex, 4, mIndex, 2);
+
+	// 枠描画
+	DrawFrame();
+}
+
+void DrawCustomColor(void)
+{
+	DrawTitle("指定色");
+
+	// シェーダーの設定
+	SetUsePixelShader(psCustomColor);
+
+
+	// 定数バッファのポインタアドレス
+	
+	COLOR_F* cbBuf = (COLOR_F*)GetBufferShaderConstantBuffer(psCustomColorConstBuf);
+	cbBuf->r = 0.5f;
+	cbBuf->g = 0.5f;
+	cbBuf->b = 0.5f;
+	cbBuf->a = 1.0f;
+	
+	/*
+	float* cbBuf = (float*)GetBufferShaderConstantBuffer(psCustomColorConstBuf);
+
+	// R
+	*cbBuf = 0.5f;
+	*cbBuf++;
+
+	// G
+	*cbBuf = 0.5f;
+	*cbBuf++;
+
+	// B
+	*cbBuf = 0.5f;
+	*cbBuf++;
+
+	// Alpha
+	*cbBuf = 1.0f;
+	*cbBuf++;*/
+
+	// ピクセルシェーダ用の定数バッファを更新し、書き込んだ値を反映
+	UpdateShaderConstantBuffer(psCustomColorConstBuf);
+
+	// ピクセルシェーダ用の定数バッファを定数バッファレジスタに送る
+	SetShaderConstantBuffer(psCustomColorConstBuf, DX_SHADERTYPE_PIXEL, 0);
+
+	// ポリゴンの生成
+	MakeSquereVertex();
+
+	// 描画
+	DrawPolygonIndexed2DToShader(
+		mVertex, 4, mIndex, 2);
+
+	// 枠描画
+	DrawFrame();
 }

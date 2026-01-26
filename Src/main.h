@@ -33,6 +33,10 @@ int texNoize;
 int texWhite;
 
 // シェーダーハンドル
+int psSimpleColor;
+
+int psCustomColor;
+int psCustomColorConstBuf;
 
 void Init(void);
 void Release(void);
@@ -45,5 +49,7 @@ void NewLine(void);
 void DrawTitle(std::string title);
 // 枠描画
 void DrawFrame(void);
-// シェーダー描画関数
 
+// シェーダー描画関数
+void DrawSimpleColor(void);
+void DrawCustomColor(void);
