@@ -30,5 +30,14 @@
   <ItemGroup>
     <FxCompile Include="Src\SimpleColor.hlsl" />
     <FxCompile Include="Src\CustomColor.hlsl" />
+    <FxCompile Include="Src\CircleColor.hlsl" />
+    <FxCompile Include="Src\Texture.hlsl" />
+    <FxCompile Include="Src\TextureGray.hlsl" />
+    <FxCompile Include="Src\TextureSepia.hlsl" />
+    <FxCompile Include="Src\TextureNoize.hlsl" />
+    <FxCompile Include="Src\UVScroll.hlsl" />
+    <FxCompile Include="Src\TextureMosaic.hlsl" />
+    <FxCompile Include="Src\UVDistotion.hlsl" />
+    <FxCompile Include="Src\TextureCrayon.hlsl" />
   </ItemGroup>
 </Project>
